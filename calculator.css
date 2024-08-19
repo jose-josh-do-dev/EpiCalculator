@@ -1,0 +1,119 @@
+.calculator-container {
+    position: absolute;
+    width: 260px;
+    border: 1px solid #ccc;
+    background: #f4f4f4;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 12px; /* Increased rounded edges */
+    z-index: 999999;
+  }
+  
+  .calculator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .calculator-header .close-calculator {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .calculator-screen {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 10px;
+    font-size: 18px;
+    text-align: right;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #eaeaea;
+  }
+  
+  .calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  
+  /* General button styling */
+  .btncalc {
+    padding: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  /* Number buttons */
+  .btncalc:nth-child(5), /* 7 */
+  .btncalc:nth-child(6), /* 8 */
+  .btncalc:nth-child(7), /* 9 */
+  .btncalc:nth-child(9), /* 4 */
+  .btncalc:nth-child(10), /* 5 */
+  .btncalc:nth-child(11), /* 6 */
+  .btncalc:nth-child(13), /* 1 */
+  .btncalc:nth-child(14), /* 2 */
+  .btncalc:nth-child(15), /* 3 */
+  .btncalc:nth-child(17), /* 0 */
+  .btncalc:nth-child(18) /* +/- */
+   { /* . */
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  
+  /* Operator buttons */
+  .btncalc:nth-child(1), /* CE */
+  .btncalc:nth-child(2), /* C */
+  .btncalc:nth-child(3), /* sqrt */
+  .btncalc:nth-child(4), /* / */
+  .btncalc:nth-child(8), /* * */
+  .btncalc:nth-child(12), /* - */
+  .btncalc:nth-child(16), /* + */
+  .btncalc:nth-child(20) /* 1/x */
+  
+  { /* = */
+    background-color: #ff9800;
+    color: #ffffff;
+  }
+  
+  /* Equals button styling */
+  .btncalc:nth-child(19) {
+    background-color: #4caf50;
+  }
+  
+  /* Special styling for Ok and Cancel buttons */
+  .btncalc:nth-child(21),
+  .btncalc:nth-child(22) {
+    background-color: #ff5722;
+    color: #ffffff;
+    grid-column: span 2;
+  }
+  
+  /* Hover effect */
+  .btncalc:hover {
+    background-color: #d9d9d9;
+    border-color: #007bff;
+  }
+  
+  /* Highlight effect on button press */
+  .btncalc:active {
+    background-color: #004aad;
+    color: #ffffff;
+  }
+  
+  /* Disabled button styling */
+  .btncalc[disabled] {
+    background: #aaa;
+    color: #777;
+    cursor: not-allowed;
+  }
+  
