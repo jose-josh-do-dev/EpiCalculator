@@ -88,6 +88,8 @@ function injectCalculatorHTML() {
               const event = new Event("input", { bubbles: true });
               inputElement.dispatchEvent(event);
               calculator.style.display = "none";
+              inputElement.focus();
+              
             }
           }
           break;
@@ -314,6 +316,8 @@ function manageCalculatorButton(kendoNumericTextBox) {
       // Track the active button and container
       activeCalculatorButton = button;
       activeKendoNumericTextBox = kendoNumericTextBox;
+      inputElement = kendoNumericTextBox.querySelector("input");
+      inputElement.focus();
     }
   }
   
@@ -324,7 +328,7 @@ function handleFocusBlur(event) {
   if (kendoNumericTextBox) {
     if (event.type === "focusin") {
       if (kendoNumericTextBox !== activeKendoNumericTextBox) {
-        manageCalculatorButton(kendoNumericTextBox);
+        setTimeout(()=>{manageCalculatorButton(kendoNumericTextBox);});
       }
     } else if (event.type === "focusout") {
       if (kendoNumericTextBox === activeKendoNumericTextBox) {
@@ -352,4 +356,4 @@ injectCalculatorHTML();
 
 // Attach the event listener to the document for focusin and focusout
 document.addEventListener("focusin", handleFocusBlur);
-//document.addEventListener("focusout", handleFocusBlur);
+document.addEventListener("focusout", handleFocusBlur);
