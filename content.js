@@ -431,8 +431,11 @@ function observeKendoPopups() {
         // Check if the added node is a kendo-popup
         if (node.nodeType === 1 && node.matches('kendo-popup')) {
           // Once a kendo-popup is detected, insert the menu items
+          // do this only if  the node has the class 'k-context-menu-popup
+          if (node.classList.contains('k-context-menu-popup')) {
           kendoPopup = node;
           insertMenuItems(node);
+          }
         }
       });
     });
