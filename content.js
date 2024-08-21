@@ -4,7 +4,8 @@ let activeKendoNumericTextBox = null;
 let inputElement = null; // To track the input element that triggered the calculator
 let isDragging = false; // To track whether the calculator is being dragged
 let offsetX, offsetY; // To track the offset when dragging
-
+let lastFocusedInput = null;
+let kendoPopup = null;
 // Inject the calculator HTML into the page
 function injectCalculatorHTML() {
   const calculatorHTML = `
@@ -330,6 +331,9 @@ function handleFocusBlur(event) {
       if (kendoNumericTextBox !== activeKendoNumericTextBox) {
         setTimeout(()=>{manageCalculatorButton(kendoNumericTextBox);});
       }
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.isContentEditable) {
+        lastFocusedInput = event.target;
+      }
     } else if (event.type === "focusout") {
       if (kendoNumericTextBox === activeKendoNumericTextBox) {
         // Check if the new focus target is the calculator button or not
@@ -357,3 +361,129 @@ injectCalculatorHTML();
 // Attach the event listener to the document for focusin and focusout
 document.addEventListener("focusin", handleFocusBlur);
 document.addEventListener("focusout", handleFocusBlur);
+
+
+//Add Copy paste
+// Function to insert copy and paste menu items into kendo-popup
+function insertMenuItems(kendoPopup) {
+  // Check if the popup already contains the copy and paste items to avoid duplicates
+  const existingCopyItem = kendoPopup.querySelector('.kendo-menu-item-copy');
+  const existingPasteItem = kendoPopup.querySelector('.kendo-menu-item-paste');
+
+  if (!existingCopyItem && !existingPasteItem) {
+    // Create copy and paste menu items with matching structure and classes
+    const copyMenuItem = document.createElement('li');
+    copyMenuItem.setAttribute('kendomenuitem', '');
+    copyMenuItem.setAttribute('role', 'menuitem');
+    copyMenuItem.classList.add('k-item', 'k-menu-item', 'k-last', 'ng-star-inserted', 'kendo-menu-item-copy');
+    copyMenuItem.setAttribute('tabindex', '-1');
+    copyMenuItem.innerHTML = `
+      <span role="presentation" class="k-link k-menu-link ng-star-inserted">
+        <div class="ep-context-item-icons ng-star-inserted"></div>
+        <span class="context-icon mdi mdi-content-copy ng-star-inserted"></span>
+        <div class="ep-context-item-caption ep-user-select-none ep-context-caption-padding ng-star-inserted">
+          Copy
+        </div>
+      </span>
+    `;
+
+    const pasteMenuItem = document.createElement('li');
+    pasteMenuItem.setAttribute('kendomenuitem', '');
+    pasteMenuItem.setAttribute('role', 'menuitem');
+    pasteMenuItem.classList.add('k-item', 'k-menu-item', 'k-last', 'ng-star-inserted', 'kendo-menu-item-paste');
+    pasteMenuItem.setAttribute('tabindex', '-1');
+    pasteMenuItem.innerHTML = `
+      <span role="presentation" class="k-link k-menu-link ng-star-inserted">
+        <div class="ep-context-item-icons ng-star-inserted"></div>
+        <span class="context-icon mdi mdi-content-paste ng-star-inserted"></span>
+        <div class="ep-context-item-caption ep-user-select-none ep-context-caption-padding ng-star-inserted">
+          Paste
+        </div>
+      </span>
+    `;
+
+    // Insert the new items into the kendo-popup
+    kendoPopup.querySelector('ul').appendChild(copyMenuItem);
+    kendoPopup.querySelector('ul').appendChild(pasteMenuItem);
+
+    // Add event listeners for the new menu items (if needed)
+    copyMenuItem.addEventListener('click', () => {
+      handleCopyPaste('copy');
+      removeKendoPopup();
+      // Implement your copy functionality here
+    });
+
+    pasteMenuItem.addEventListener('click', () => {
+      handleCopyPaste('paste');
+      removeKendoPopup();
+      // Implement your paste functionality here
+    });
+  }
+}
+
+
+// Function to observe when new kendo-popup elements are added
+function observeKendoPopups() {
+  // Set up the MutationObserver
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        // Check if the added node is a kendo-popup
+        if (node.nodeType === 1 && node.matches('kendo-popup')) {
+          // Once a kendo-popup is detected, insert the menu items
+          kendoPopup = node;
+          insertMenuItems(node);
+        }
+      });
+    });
+  });
+
+  // Start observing the document body for added nodes (including subtree)
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
+}
+
+function handleCopyPaste(action) {
+  if (lastFocusedInput) {
+    if (action === 'copy') {
+      // Copy the value/text of the last focused input
+      const inputValue = lastFocusedInput.value || lastFocusedInput.innerText || '';
+      navigator.clipboard.writeText(inputValue).then(() => {
+        lastFocusedInput.focus();
+        lastFocusedInput.select();
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    } else if (action === 'paste') {
+      // Paste the clipboard value into the last focused input
+      navigator.clipboard.readText().then((clipboardText) => {
+        if (lastFocusedInput.tagName === 'INPUT' || lastFocusedInput.tagName === 'TEXTAREA') {
+          lastFocusedInput.value = clipboardText;
+          const event = new Event("input", { bubbles: true });
+          lastFocusedInput.dispatchEvent(event);
+          lastFocusedInput.focus();
+        } else {
+          lastFocusedInput.innerText = clipboardText;
+        }
+
+        // Trigger an input event to ensure any listeners are aware of the change
+        const event = new Event('input', { bubbles: true });
+        lastFocusedInput.dispatchEvent(event);
+      }).catch(err => {
+        console.error('Failed to read from clipboard:', err);
+      });
+    }
+  } else {
+    console.warn('No input element was in focus');
+  }
+}
+function removeKendoPopup() {
+  if (kendoPopup) {
+    kendoPopup.remove();
+    kendoPopup = null; // Clear the reference
+  }
+}
+// Run the observer function when the script loads
+observeKendoPopups();
