@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
-    "name": "EpiUsers Calculator",
-    "description": "This extension brings back the calculator for numeric fields and automatically applies it across Epicor Kinetic (r) web UX. It also aims to add any additional function and features that we can to bring it to part with classic.",
+    "name": "EpiUsers Kinetic UX Enhancement",
+    "description": "This extension aims to bring back lost features of classic Kinetic like the in line calculator, copy paste context menu and more",
     "version": "1.1",
     "permissions": ["activeTab"],
     "icons": {
